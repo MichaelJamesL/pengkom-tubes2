@@ -13,7 +13,7 @@ class FunctionHandler(QObject):
     def print(self, msg):
         """Fungsi yang melakukan perhitungan dan mengirimkan hasil ke UI"""
         self.textUpdated.emit(msg)  # Emit signal dengan string hasil perhitungan
-    
+
     def myFunc1(self):
         Start(self)
     
@@ -239,7 +239,7 @@ status = bool(True)
 
 #Mulai di sini...
 def Start(self):
-    print(""" 
+    self.print(""" 
                                                                                                     
                                                                                                     
     .--.--.            ____                         ___                                            
