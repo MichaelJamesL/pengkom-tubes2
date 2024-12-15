@@ -27,7 +27,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def send_input(self):
         input_text = self.lineEdit.text()
-        self.function_handler.print(input_text)  # Mengirim input ke FunctionHandler
+        self.function_handler.handleInput(input_text)  # Mengirim input ke FunctionHandler
         self.lineEdit.clear()  # Clear the QLineEdit after sending the input
         
 if __name__ == "__main__":

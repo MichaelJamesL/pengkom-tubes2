@@ -3,6 +3,7 @@ import time
 from PyQt5.QtCore import pyqtSignal, QObject
 
 #Fungsi
+global_input = ""
 class FunctionHandler(QObject):
     # Signal untuk mengirim string ke slot
     textUpdated = pyqtSignal(str)
@@ -14,9 +15,14 @@ class FunctionHandler(QObject):
         """Fungsi yang melakukan perhitungan dan mengirimkan hasil ke UI"""
         self.textUpdated.emit(msg)  # Emit signal dengan string hasil perhitungan
 
+    def handleInput(self, input_text):
+        """Fungsi untuk menangani input dari QLineEdit"""
+        global global_input
+        global_input = input_text
+        
     def myFunc1(self):
         Start(self)
-    
+
 def suhuwaktu():
     cnt = 0
     suhu = float("inf")
