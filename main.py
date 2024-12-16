@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from design2 import Ui_MainWindow  # Mengimpor kelas yang dihasilkan oleh pyuic5
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread
 #from test2 import FunctionHandler
 from app import FunctionHandler
 
@@ -11,6 +11,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)  # Menyiapkan UI dari file design.py
         
         self.function_handler = FunctionHandler()
+        self.thread = QThread() # Buat object thread
+        self.function_handler.moveToThread(self.thread)
+        self.thread.started.connect(self.function_handler.myFunc1)
+        self.thread.start()
+        
         # Menghubungkan signal dari FunctionHandler ke slot untuk mengupdate QLabel
         self.function_handler.textUpdated.connect(self.update_text)
 
