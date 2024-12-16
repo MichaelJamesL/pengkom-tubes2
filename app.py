@@ -1,6 +1,6 @@
 #Import Library
 import time
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject, QThread
 
 #Fungsi
 global_input = ""
@@ -23,6 +23,13 @@ class FunctionHandler(QObject):
     def myFunc1(self):
         Start(self)
 
+    def getInput(self, msg):
+        prev_input = global_input
+        self.print(msg)
+        while(global_input == prev_input):
+            time.sleep(1)
+        return global_input
+    
 def suhuwaktu():
     cnt = 0
     suhu = float("inf")
@@ -277,10 +284,9 @@ def Start(self):
                                                                                                     
     """)
     while(status != False):
-        input("Press Enter to Continue")
+        self.getInput("Press Enter to Continue")
         #List mode
-        print(f"Mode :\n1. Defrost\n2. Cook")
-        mode_awal = str(input("Pilih mode yang tersedia : "))
+        mode_awal = self.getInput("Mode :\n1. Defrost\n2. Cook\nPilih mode yang tersedia : ")
         mode_valid = bool(False)
 
         #Cek masukan
