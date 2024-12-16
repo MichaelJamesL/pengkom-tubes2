@@ -34,6 +34,8 @@ class Ui_MainWindow(object):
         self.label.setScaledContents(False)
         self.label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.label.setObjectName("label")
+        self.label.setWordWrap(True)
+        
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setEnabled(True)
         self.label_2.setGeometry(QtCore.QRect(-170, -300, 750, 957))
