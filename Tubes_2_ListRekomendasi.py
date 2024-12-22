@@ -24,13 +24,16 @@ class FunctionHandler(QObject):
         Start(self)
 
     def getInput(self, msg):
+        global global_input
         prev_input = global_input
         self.print(msg)
         while(global_input == prev_input):
             time.sleep(1)
-        return global_input
+        local_input = global_input
+        global_input = 0
+        return local_input
     
-def suhuwaktu():
+def suhuwaktu(self):
     #input suhu waktu manual
     suhu = float("inf")
     waktu = float("inf")
@@ -40,7 +43,7 @@ def suhuwaktu():
         waktu = int(self.getInput(f"Masukkan waktu di bawah {waktu_max} detik\nMasukkan Waktu (detik) : "))
     return suhu, waktu
 
-def sesuai(suhu, waktu):
+def sesuai(self, suhu, waktu):
     #cek apakah suhu waktu sesuai
     global temp
     verify = False
@@ -52,42 +55,47 @@ def sesuai(suhu, waktu):
             verify = True
         elif(int(tmp) == 2):
             temp = bool(True)
-            suhu, waktu = suhuwaktu()
+            suhu, waktu = suhuwaktu(self)
     return suhu, waktu
 
-def ulang(): 
-    tmp = str(input("\nApakah anda ingin kembali menyalakan microwave? \n1. Ya\n2. Tidak\n"))
+def ulang(self): 
+    tmp = self.getInput("Apakah anda ingin kembali menyalakan microwave? \n1. Ya\n2. Tidak\n")
     #format input
     if(int(tmp) == 1):
         #lanjut
-        return
+        Start(self)
     elif(int(tmp) == 2):
         global status
         status = False
-        self.print(""". . .""")
+        self.print(". . .")
         time.sleep(2)
-        self.print("""D U A R R R""")
+        self.print("D U A R R R")
+        time.sleep(3)
+        exit()
         
-def proses(suhu, waktu, mode):
+def proses(self, suhu, waktu, mode, par=0):
     self.print(f"Memulai proses\nSuhu : {suhu}°C\nWaktu : {waktu} detik")
     for i in range(waktu, -1, -1):
-        self.print(f"\rMemproses... Sisa Waktu : {i//60:02d} menit {i%60:02d} detik", end="")
+        self.print(f"Memproses... Sisa Waktu : {i//60:02d} menit {i%60:02d} detik")
         time.sleep(1)
     if(mode == "cook"):
         #cek user input
         #masuk mode warm
         print("\nMenghangatkan...")
-    ulang()
+    if par == 0 :
+        ulang(self)
+    else :
+        return
 
 def auto_defrost(tmp):
     suhu = int(tmp)
     waktu = int(tmp)
     return suhu, waktu
 
-def auto_cook(cnt, rekom_waktu, rekom_suhu, rekomendasi):
+def auto_cook(self, cnt, rekom_waktu, rekom_suhu, rekomendasi):
     recommendations = [f"{rekomendasi[i]+1}. {i}" for i in rekomendasi.keys()]
     #format Input 
-    x = int(self.getInput("\n".join(recommendations), f"\n{cnt+1}. simpan makanan baru\nPiilih makanan yang tersedia"))
+    x = int(self.getInput("\n".join(recommendations) + f"\n{cnt+1}. simpan makanan baru\nPiilih makanan yang tersedia"))
     x -= 1
     mode_valid = False
     while(mode_valid == False):
@@ -95,7 +103,7 @@ def auto_cook(cnt, rekom_waktu, rekom_suhu, rekomendasi):
             mode_valid = True
             suhu = rekom_suhu[x]
             waktu = rekom_waktu[x]
-            suhu, waktu = sesuai(suhu, waktu)
+            suhu, waktu = sesuai(self, suhu, waktu)
             if(temp == True):
                 y = str(input("Apakah Anda mau menyimpannya?\n1.Ya\n2.Tidak\n"))
                 if(int(y) == 1):
@@ -106,7 +114,7 @@ def auto_cook(cnt, rekom_waktu, rekom_suhu, rekomendasi):
             mode_valid = True
             #input baru
             Makanan = str(input("Nama Makanan : "))
-            suhu, waktu = suhuwaktu()
+            suhu, waktu = suhuwaktu(self)
             tmp = 3
             while tmp!=1:
                 tmp = int(input("Simpan?\n1.Ya\n2.Tidak "))
@@ -149,31 +157,31 @@ def Defrost(self, par):
             mode_valid = True
             Berat = int(self.getInput("Berat Makanan (g): "))
             suhu, waktu = auto_defrost(Berat)
-            suhu, waktu = sesuai(suhu, waktu)
+            suhu, waktu = sesuai(self, suhu, waktu)
         elif(int(ModeDefrost) == 2):
             #Manual
             mode_valid = True
-            suhu, waktu = suhuwaktu()
-            suhu, waktu = sesuai(suhu, waktu)
+            suhu, waktu = suhuwaktu(self)
+            suhu, waktu = sesuai(self, suhu, waktu)
         else:
             #Minta Input lagi
             ModeDefrost = str(self.getInput("Mode Defrost apa? "))
      
     #Cek asal   
     if(par == 0): 
-        proses(suhu, waktu, "defrost")
-        ulang()
+        proses(self, suhu, waktu, "defrost")
+        ulang(self)
     elif(par == 1): 
-        Cook(cnt, 1, suhu, waktu)
+        Cook(self, cnt, 1, suhu, waktu)
 
 #Masuk ke Cook
-def Cook(self, cnt, par, suhu_def, waktu_def):
+def Cook(self, cnt, par, suhu_def=0, waktu_def=0):
     self.print("Memasuki mode cook")
     time.sleep(0.7)
     #Cek asal
     ModeCook = 0
     if(par == 0): 
-        print(f"Mode yang tersedia :\n1. Auto\n2. Manual")
+        self.print(f"Mode yang tersedia :\n1. Auto\n2. Manual")
         ModeCook = str(self.getInput(f"Memasuki mode cook\nMode :\n1. Auto\n2. Manual\nPilih mode yang tersedia : "))
     elif(par == 1): 
         ModeCook = '1'
@@ -194,29 +202,29 @@ def Cook(self, cnt, par, suhu_def, waktu_def):
             mode_valid = True
             #Jadi auto
             #print list
-            suhu, waktu, cnt = auto_cook(cnt, rekom_waktu, rekom_suhu, rekomendasi)
+            suhu, waktu, cnt = auto_cook(self, cnt, rekom_waktu, rekom_suhu, rekomendasi)
             #Pilih
         elif(int(ModeCook) == 2):
             mode_valid = True
             #Jadi manual
-            suhu, waktu = suhuwaktu()
-            sesuai(suhu, waktu)
+            suhu, waktu = suhuwaktu(self)
+            sesuai(self, suhu, waktu)
         else:
             #Minta Input lagi
             ModeCook = str(self.getInput("Mode Cook apa? "))
     
     if(par == 0): 
-        proses(suhu, waktu, "cook")
-        ulang()
+        proses(self, suhu, waktu, "cook")
+        ulang(self)
     elif(par == 1):
-        proses(suhu_def, waktu_def, "defrost")
-        proses(suhu, waktu, "cook")
-        ulang()
+        proses(self, suhu_def, waktu_def, "defrost", par)
+        proses(self, suhu, waktu, "cook")
+        ulang(self)
         
     return cnt
 
-def Multi():
-    Defrost(1)
+def Multi(self):
+    Defrost(self, 1)
 
 #List rekomendasi (pls update 33nya)
 rekomendasi = {
@@ -251,7 +259,7 @@ def Start(self):
     while(status != False):
         self.getInput("Press Enter to Continue")
         #List mode
-        mode_awal = self.getInput("Mode :\n1. Defrost\n2. Cook\nPilih mode yang tersedia : ")
+        mode_awal = self.getInput("Mode :\n1. Defrost\n2. Cook\n3. Defrost-Cook\nPilih mode yang tersedia : ")
         mode_valid = bool(False)
         cnt = int(len(rekomendasi))
 
@@ -275,7 +283,7 @@ def Start(self):
                 cnt = Cook(self, cnt, 0) #Masuk Cook da
             elif(int(mode_awal) == 3): 
                 mode_valid = True
-                Multi()
+                Multi(self)
             else: #Eror Prevention
                 mode_awal = str(self.getInput("Mohon pilih mode yang tersedia "))
             
