@@ -122,7 +122,7 @@ def auto_cook(cnt, rekom_waktu, rekom_suhu, rekomendasi):
             x = int(self.getInput("Mohon pilih mode yang valid: "))
 
 
-def Defrost(par):
+def Defrost(self, par):
     self.print("Memasuki mode defrost")
     time.sleep(0.7)
     #Cek dari multi atau manual
@@ -167,7 +167,7 @@ def Defrost(par):
         Cook(cnt, 1, suhu, waktu)
 
 #Masuk ke Cook
-def Cook(cnt, par, suhu_def, waktu_def):
+def Cook(self, cnt, par, suhu_def, waktu_def):
     self.print("Memasuki mode cook")
     time.sleep(0.7)
     #Cek asal
@@ -269,12 +269,13 @@ def Start(self):
             #Cek masukan
             if(int(mode_awal) == 1):
                 mode_valid = True
-                Defrost(0) #Masuk ke Defrost
+                Defrost(self, 0) #Masuk ke Defrost
             elif(int(mode_awal) == 2):
                 mode_valid = True
-                cnt = Cook(cnt, 0) #Masuk Cook da
+                cnt = Cook(self, cnt, 0) #Masuk Cook da
             elif(int(mode_awal) == 3): 
                 mode_valid = True
                 Multi()
             else: #Eror Prevention
                 mode_awal = str(self.getInput("Mohon pilih mode yang tersedia "))
+            
